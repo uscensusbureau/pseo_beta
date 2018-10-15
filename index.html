@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Data - Longitudinal Employer-Household Dynamics</title>
+    <script type="text/javascript" src="js/svgxuse.min.js" defer></script>
+    <!-- load the d3.js library -->
+    <script type="text/javascript" src="js/d3.v4.min.js"></script>
+    <!-- load the jquery library -->
+    <script type="text/javascript" src="js/jquery-3.3.1.slim.min.js"></script>
+    <!-- load the bootstrap css -->
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- load the bootstrap js -->
+    <script type="text/javascript" src="js/bootstrap.bundle.min.js"></script>
+    <!-- set noconflict mode after bootstrap is loaded -->
+    <script type="text/javascript">
+      var $j33 = $.noConflict(true);
+    </script>
+    <!-- load the pseo css -->
+    <link type="text/css" rel="stylesheet" href="css/pseo.css">
+  </head>
+
+  <body>
+  <div id="page-container">
+   <div class="container-fluid h-100">
+        <!-- Top left header with click navigation-->
+        <div class="graphics pseo-style">
+          <a href="https://lehd.ces.census.gov/data/pseo_beta.html" target="_blank" style="text-decoration:none;" title="PSEO Home" class="header-font">
+            <svg class="medium-icon text-color">
+              <use xlink:href="svg/fa-solid.svg#user-graduate"></use>
+            </svg>
+            <span class="font-bold header-font align-top text-color"> PSEO</span>
+          </a>
+        </div>
+        
+        <!-- Page title with right aligned links for data, help, and contact -->
+        <div class="header pseo-style">
+        
+          <a class="header-text" href="javascript:window.location.href=window.location.href" style="text-decoration:none;" >
+            <span class="font-bold header-font text-header text-color" >Post-Secondary Employment Outcomes</span>
+          </a>
+          
+          <div class="help-options">
+
+            <button type="button" class="btn btn-outline-secondary align-top census-font icon-hover" onclick="openInNewTab('https://lehd.ces.census.gov/data/pseo/graduate_earnings_all.csv');">
+              <svg class="button-icon">
+                <use xlink:href="svg/fa-solid.svg#file-excel"></use>
+              </svg>
+        Download Data
+      </button>
+
+            <button type="button" class="btn btn-outline-secondary align-top census-font icon-hover" onclick="openEmail('ces.local.employment.dynamics@census.gov');">
+              <svg class="button-icon">
+                <use xlink:href="svg/fa-solid.svg#envelope"></use>
+              </svg>
+              Email Us
+            </button>
+
+            <button type="button" class="btn btn-outline-secondary align-top census-font icon-hover" onclick="openInNewTab('https://lehd.ces.census.gov/data/pseo_beta.html#methodology');"> 
+              <svg class="button-icon">
+                <use xlink:href="svg/fa-solid.svg#question-circle"></use>
+              </svg>
+              Help
+            </button>
+          </div>
+        </div>
+        
+        <!-- Left panel viz controls -->
+        <div class="controlpanel">
+        
+          <!-- State selector -->
+          <div class="input-group mb-2 btn-group-vertical">
+            <button type="button" class="btn btn-outline-dark font-bold census-font" disabled>State</button>
+            <button class="btn btn-outline-secondary dropdown-toggle btn-block custom-dropdown census-font" type="button" id="dropdownStateButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Select State">Select State</button>
+            <div id="state-dropdown" class="dropdown-menu census-font" aria-labelledby="dropdownStateButton"></div>
+          </div>
+
+          <!-- University selector -->
+          <div class="input-group mb-2 btn-group-vertical">
+            <button type="button" class="btn btn-outline-dark font-bold census-font" disabled>Institution</button>
+            <button class="btn btn-outline-secondary dropdown-toggle btn-block custom-dropdown census-font" type="button" id="dropdownSchoolButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Select Institution">Select Institution</button>
+            <div id="institution-dropdown" class="dropdown-menu census-font" aria-labelledby="dropdownSchoolButton"></div>
+          </div>
+          
+          <!-- Cohort selector -->
+          <div class="input-group mb-2 btn-group-vertical">
+            <button type="button" class="btn btn-outline-dark font-bold census-font" disabled>Graduation Cohort</button>
+            <button class="btn btn-outline-secondary dropdown-toggle btn-block custom-dropdown census-font" type="button" id="dropdownCohortButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Select Cohort">Select Cohort</button>
+            <div id="cohort-dropdown" class="dropdown-menu census-font" aria-labelledby="dropdownCohortButton"></div>
+          </div>
+          
+          <div class="input-group mb-2 btn-group-vertical">
+            <button type="button" class="btn btn-outline-dark font-bold census-font" disabled>Compare Earnings by</button>
+            <!-- yearpostgrad v income percentile swap button -->
+            <!-- the icons and labels are swapped due to change request to match legend -->
+            <div id="twotoggle" class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+              <label class="btn btn-outline-secondary active w-100 pb-0" title="Compare by Years Postgrad">
+                <input type="radio" name="radioName" id="earnings_percentile" checked>
+                <svg class="small-icon icon-toggle-active">
+                  <use xlink:href="svg/fa-solid.svg#clock"></use>
+                </svg>
+              </label>
+              <label class="btn btn-outline-secondary w-100 pb-0" title="Compare by Earnings Percentile">
+                <input type="radio" name="radioName" id="years_postgrad">
+                <svg class="small-icon icon-toggle-inactive">
+                  <use xlink:href="svg/fa-solid.svg#percentage"></use>
+                </svg>
+              </label>
+            </div>
+          </div>
+
+          <div class="input-group mb-2 btn-group-vertical">
+            <button type="button" class="btn btn-outline-dark font-bold census-font" disabled>Legend</button>
+            <div id="legend" class="border border-secondary rounded-bottom"></div>
+          </div>
+          
+          <!-- selection depending on above swap button -->
+          <div class="input-group btn-group-vertical bottom-align">
+            <!-- Label button for earnings/postgrad selection -->
+            <button id="radioLabel" type="button" class="btn btn-outline-dark font-bold census-font" disabled></button>
+            <!-- 3 button group for selection options -->
+            <div id="threetoggle" class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+              <label class="btn btn-outline-secondary active w-100 census-font" title="Select Option">
+                <input type="radio" name="radioSelect" id="radioselect1"> 
+                <span></span>
+              </label>
+              <label class="btn btn-outline-secondary w-100 census-font" title="Select Option">
+                <input type="radio" name="radioSelect" id="radioselect2" checked>
+                <span></span>
+              </label>
+              <label class="btn btn-outline-secondary w-100 census-font" title="Select Option">
+                <input type="radio" name="radioSelect" id="radioselect3">
+                <span></span>
+              </label>
+            </div>
+          </div>
+
+
+        </div>
+        
+        <div class="chartcontainer pseo-style" id="chart"></div>
+
+        <div class="flags">
+          <div class="input-group mb-3 btn-group-vertical">
+            <button id="clearbutton" type="button" class="btn btn-outline-secondary census-font icon-hover">
+              Clear Selection
+              <svg class="button-icon">
+                <use xlink:href="svg/fa-solid.svg#angle-double-right"></use>
+              </svg> 
+            </button>
+          </div>
+        </div>
+
+        <div class="options pseo-style">
+          <div id="checkbox-grid" class="btn-group-toggle" data-toggle="buttons"></div>
+        </div>
+        
+    </div>
+    
+    <!-- load the pseo js -->
+    <script type="text/javascript" src="js/pseo.js"></script>
+   </div>
+  </body>
+</html>
+
